@@ -1,17 +1,28 @@
 from rest_framework import viewsets
-from .models import Server
-from .serializers import SeverSerializer
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count
+from drf_spectacular.utils import extend_schema
+from .models import Server, Category
+from .serializers import SeverSerializer, CategorySerializer
 from .schema import server_list_docs
 # Create your views here.
 
+
+class CategoryListViewSet(viewsets.ViewSet):
+    queryset = Category.objects.all()
+
+    @extend_schema(responses=CategorySerializer)
+    def list(self, request):
+        serializer = CategorySerializer(self.queryset, many=True)
+        return Response(serializer.data)
 
 # class that provide CRUD operations
 class ServerListViewSet(viewsets.ViewSet):
     
     queryset = Server.objects.all()
+    # permission_classes = [IsAuthenticated]
 
     # GET - get a list as a response
     @server_list_docs

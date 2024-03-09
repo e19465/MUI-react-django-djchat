@@ -9,7 +9,7 @@ import ExploreServers from "../components/Main/ExploreServers";
 //////////////////////////////////////////////////////
 
 /////////////////////////////////////////////
-const Home = () => {
+const Explore = () => {
   ///////////////////////////////////
   return (
     <Box sx={{ display: "flex" }}>
@@ -27,4 +27,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Explore;

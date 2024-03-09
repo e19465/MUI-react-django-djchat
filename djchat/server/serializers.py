@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Server, Channel
+from .models import Server, Channel, Category
 
 
 class ChannelSerializer(serializers.ModelSerializer):
@@ -9,6 +9,13 @@ class ChannelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Category
+        fields = "__all__"
+        
+
 class SeverSerializer(serializers.ModelSerializer):
 
     """
@@ -17,6 +24,7 @@ class SeverSerializer(serializers.ModelSerializer):
     This can only be done iff there is a relationship between two models
     """
     channel_server = ChannelSerializer(many=True)
+    category = serializers.StringRelatedField()
 
     # adding new field to server instance and should apecify a method accociate with SerializerMethodField
     num_members = serializers.SerializerMethodField(method_name='get_num_members')

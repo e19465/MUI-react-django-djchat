@@ -16,7 +16,7 @@ urlpatterns = [
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
 
     # this method is also work instead of (+ server_router.urls)
-    path("api/servers/", include("server.urls")),
+    path("api/server/", include("server.urls")),
 
 ]
 #+ server_router.urls
