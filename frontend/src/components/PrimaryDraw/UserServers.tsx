@@ -7,40 +7,34 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import useCrud from "../../hooks/useCrud";
-import React, { useEffect } from "react";
+import React from "react";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import { MEDIA_URL } from "../../api";
 import { Link } from "react-router-dom";
+import { Server } from "../../@types/server.d";
 ////////////////////////////////////////////////////////////////////
 
 type Props = {
   isDrawerOpen: boolean;
 };
 
-interface Server {
-  id: number;
-  name: string;
-  category: string;
-  icon: string;
+// interface Server {
+//   id: number;
+//   name: string;
+//   category: string;
+//   icon: string;
+// }
+
+interface ServerChannelsProps {
+  data: Server[];
 }
 
 ///////////////////////////////////////////////////////////////////
-const PopularChannels: React.FC<Props> = ({ isDrawerOpen }) => {
-  const { fetchData, dataCRUD, error, isLoading } = useCrud<Server>(
-    [],
-    "/server/select/"
-  );
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // useEffect(() => {
-  //   console.log(dataCRUD);
-  // }, [dataCRUD]);
-
+const UserServers: React.FC<Props & ServerChannelsProps> = ({
+  isDrawerOpen,
+  data,
+}) => {
   //////////////////////////////////////////////////////////////
   return (
     <>
@@ -61,11 +55,11 @@ const PopularChannels: React.FC<Props> = ({ isDrawerOpen }) => {
             fontWeight: 500,
           }}
         >
-          Popular Channels
+          Server
         </Typography>
       </Box>
       <List>
-        {dataCRUD?.map((item) => (
+        {data?.map((item) => (
           <ListItem
             sx={{ display: "block" }}
             dense={true}
@@ -138,4 +132,4 @@ const PopularChannels: React.FC<Props> = ({ isDrawerOpen }) => {
   );
 };
 
-export default PopularChannels;
+export default UserServers;

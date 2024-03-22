@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
+import ExploreCategories from "../components/SecondaryDraw/ExploreCategories";
+import AccountButton from "../components/PrimaryAppBar/AccountButton";
 /////////////////////////////////////////////////////////////////////
 
 const PrimaryAppBar = () => {
@@ -56,12 +58,17 @@ const PrimaryAppBar = () => {
           open={isOpenSideMenu && isSmallScreen}
           onClose={() => setIsOpenSideMenu((prev) => !prev)}
         >
-          {/* open={sideMenu} onClose={() => toggleDrawer(false)} */}
-          {[...Array(100)].map((element, index) => (
-            <Typography key={index} paragraph>
-              {index + 1}
-            </Typography>
-          ))}
+          <Box
+            sx={{
+              paddingTop: `${theme.primaryAppBar.height}px`,
+              minWidth: 200,
+            }}
+            role="presentation"
+            onClick={() => setIsOpenSideMenu((prev) => !prev)}
+            onKeyDown={() => setIsOpenSideMenu((prev) => !prev)}
+          >
+            <ExploreCategories />
+          </Box>
         </Drawer>
 
         <Link href="/" underline="none" color="inherit">
@@ -82,6 +89,8 @@ const PrimaryAppBar = () => {
             </Typography>
           </Typography>
         </Link>
+        <Box sx={{ flexGrow: 1 }}></Box>
+        <AccountButton />
       </Toolbar>
     </AppBar>
   );

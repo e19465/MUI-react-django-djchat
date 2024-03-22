@@ -13,10 +13,18 @@ const useAxiosWithInterceptor = (): AxiosInstance => {
       return response;
     },
     async (error) => {
-      //   const originalRequest = error.config;
-      if (error.response?.status === 403) {
-        const go = () => navigate("/test");
-        go();
+      const originalRequest = error.config;
+      if (error.response?.status === (401 || 403)) {
+        axios.defaults.withCredentials = true;
+        try {
+          const response = await axios.post(`${BASE_URL}/token/refresh/`, {});
+          if (response.status === 200) {
+            return jwtAxios(originalRequest);
+          }
+        } catch (err) {
+          console.log(err);
+          navigate("/login");
+        }
       }
       throw error;
     }

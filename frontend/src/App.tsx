@@ -1,19 +1,33 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import createMuiTheme from "./theme/theme";
+import { CssBaseline } from "@mui/material";
 import Explore from "./pages/Explore";
+import ToggleColorMode from "./theme/ToggleColorMode";
+import Server from "./pages/Server";
+import LoginPage from "./pages/LoginPage";
+import { AuthServiceProvider } from "./context/AuthContext";
+import { Navigate } from "react-router-dom";
+import TestLogin from "./pages/TestLogin";
 
 function App() {
-  const theme = createMuiTheme();
+  const isLoggedIn = localStorage.getItem("IsLoggedIn") == "true";
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/explore/:categoryName" element={<Explore />} />
-      </Routes>
-    </ThemeProvider>
+    <AuthServiceProvider>
+      <ToggleColorMode>
+        <CssBaseline />
+        <Routes>
+          <Route
+            path="/"
+            element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
+          />
+          <Route path="/testLogin" element={<TestLogin />} />
+          <Route path="/explore/:categoryName" element={<Explore />} />
+          <Route path="/server/:serverId/:channelId?" element={<Server />} />
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </ToggleColorMode>
+    </AuthServiceProvider>
   );
 }
 
