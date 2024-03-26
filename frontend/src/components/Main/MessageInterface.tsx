@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import useWebSocket from "react-use-websocket";
-import useCrud from "../../hooks/useCrud";
 import { Server } from "../../@types/server.d";
 import {
   Avatar,
@@ -15,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import MessageIntChannels from "./MessageIntChannels";
-import { useAuthServices } from "../../services/AuthServices";
+import useChatWebSocket from "../../services/chatService";
 
 interface MessageInterface {
   sender: string;
@@ -35,64 +33,15 @@ interface SendMessageData {
 
 const MessageInterface = (props: ServerChannelProps) => {
   const lastMessageRef = useRef<HTMLLIElement>(null);
+  const { serverId, channelId } = useParams();
   const theme = useTheme();
   const { data } = props;
-  const [newMessage, setNewMessage] = useState<MessageInterface[]>([]);
-  const [message, setMessage] = useState("");
-  const { serverId, channelId } = useParams();
-  const server_name = data?.[0]?.name ?? "Server";
-  const { logout, refreshAccessToken } = useAuthServices();
-  const [reconnect, setReconnect] = useState(0);
-  const maxConnectionAttempts = 4;
-  const { fetchData } = useCrud<Server>(
-    [],
-    `/messages/?channel_id=${channelId}`
+  const { message, setMessage, sendJsonMessage, newMessage } = useChatWebSocket(
+    channelId || "",
+    serverId || ""
   );
-  const websockerURL = channelId
-    ? `ws://localhost:8000/${serverId}/${channelId}/`
-    : null;
 
-  const { sendJsonMessage } = useWebSocket(websockerURL, {
-    onOpen: async () => {
-      try {
-        const data = await fetchData();
-        setNewMessage([]);
-        setNewMessage(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    onClose: (event: CloseEvent) => {
-      if (event.code === 4001) {
-        console.log("Authentcation Error");
-        refreshAccessToken().catch((error) => {
-          if (error.response && error.reponse.status === 401) {
-            logout();
-          }
-        });
-      }
-
-      console.log("Closed");
-      setReconnect((prevState) => prevState + 1);
-    },
-    onError: () => {
-      console.log("Error");
-    },
-    onMessage: (msg) => {
-      const data = JSON.parse(msg.data);
-      setNewMessage((prevMsg) => [...prevMsg, data.new_message]);
-      setMessage("");
-    },
-    shouldReconnect: (closeEvent) => {
-      if (closeEvent.code === 4001 && reconnect >= maxConnectionAttempts) {
-        return true;
-      } else {
-        setReconnect(0);
-        return false;
-      }
-    },
-    reconnectInterval: 1000,
-  });
+  const server_name = data?.[0]?.name ?? "Server";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

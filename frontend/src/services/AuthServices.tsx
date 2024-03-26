@@ -62,12 +62,33 @@ export function useAuthServices(): AuthServiceProps {
     }
   };
 
-  const logout = () => {
-    if (localStorage.getItem("username")) {
-      localStorage.removeItem("username");
-      localStorage.removeItem("user_id");
+  const logout = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/account/logout/`,
+        {},
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        if (localStorage.getItem("username")) {
+          localStorage.removeItem("username");
+          localStorage.removeItem("user_id");
+        }
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+          document.cookie =
+            name +
+            "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" +
+            window.location.hostname;
+        }
+        navigate("/login");
+      }
+    } catch (err) {
+      return err;
     }
-    navigate("/login");
   };
 
   return { login, isLoggedIn, logout, refreshAccessToken };

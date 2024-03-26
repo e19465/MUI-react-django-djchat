@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Account
@@ -8,6 +9,13 @@ from .schema import account_docs
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 # Create your views here.
 
+
+class LogoutAPIView(APIView):
+    def post(self, request, format=None):
+        response =  Response("Successfully Logged Out", status=200)
+        response.set_cookie("access", "", expires=0)
+        response.set_cookie("refresh", "", expires=0)
+        return response
 
 class AccountViewSet(viewsets.ViewSet):
 
